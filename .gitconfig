@@ -1,0 +1,30 @@
+[pull]
+    rebase = true
+[branch]
+    autosetuprebase = always
+    sort = -committerdate
+[init]
+    defaultBranch = main
+[commit]
+    gpgsign = true
+[push]
+    autoSetupRemote = true
+[rerere]
+    enabled = true
+    autoupdate = true
+[rebase]
+    autoSquash = true
+    autoStash = true
+[log]
+    abbrevCommit = true
+    follow = true
+    decorate = false
+[diff]
+    mnemonicPrefix = true
+    renames = true
+[column]
+    ui = auto
+[color]
+    ui = auto
+[core]
+    whitespace = -trailing-space

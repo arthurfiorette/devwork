@@ -35,6 +35,10 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 # Install uv/uvx (Python package runner for AI tools)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# Copy Git defaults to system-level config (before USER node)
+# This allows user-level config to override while keeping good defaults
+COPY .gitconfig /etc/gitconfig
+
 # Enable pnpm (latest - projects specify version via packageManager field)
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"

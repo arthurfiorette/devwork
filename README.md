@@ -130,13 +130,23 @@ Mount a volume for faster package installations:
 
 ### Git Configuration
 
-Mount your Git config (read-only recommended):
+The image includes optimized Git defaults (rebase on pull, auto-setup remote, etc.).
+
+To use your own Git config (recommended for personal settings like name/email):
 
 ```json
 "mounts": [
   "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,readonly"
 ]
 ```
+
+Your personal config will be merged with the built-in defaults (your settings take precedence).
+
+If not mounted, the container uses the included defaults:
+- Pull with rebase
+- Auto-setup remote on push
+- GPG signing enabled (requires GPG keys mounted separately)
+- Optimized log, diff, and rebase settings
 
 ## Built-in Shell Helpers
 
