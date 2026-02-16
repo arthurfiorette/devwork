@@ -26,6 +26,8 @@ RUN apt-get update && \
         build-essential \
         ripgrep \
         jq \
+        bat \
+        eza \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

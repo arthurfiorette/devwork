@@ -4,9 +4,13 @@
 
 set -e
 
+echo "bat:        $(bat --version 2>&1 | head -1 | awk '{print $2}')"
+echo "Claude:     $(claude --version 2>&1 | head -1 || echo 'not found')"
+echo "eza:        $(eza --version 2>&1 | head -1 | awk '{print $2}')"
+echo "jq:         $(jq --version 2>&1 | head -1 | sed 's/jq-//')"
 echo "Node.js:    $(node --version)"
 echo "pnpm:       $(pnpm --version 2>&1 | head -1)"
-echo "zsh:        $(zsh --version 2>&1 | head -1 | awk '{print $2}')"
+echo "ripgrep:    $(rg --version 2>&1 | head -1 | awk '{print $2}')"
 echo "Starship:   $(starship --version 2>&1 | head -1 | awk '{print $2}')"
-echo "Claude:     $(claude --version 2>&1 | head -1 || echo 'not found')"
 echo "uvx:        $(uvx --version 2>&1 | head -1)"
+echo "zsh:        $(zsh --version 2>&1 | head -1 | awk '{print $2}')"

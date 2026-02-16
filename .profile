@@ -5,6 +5,13 @@ export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.claude/bin:$PATH"
 
+# Modern CLI replacements
+alias cat='bat --paging=never --style=plain'
+alias ls='eza'
+alias ll='eza -l'
+alias la='eza -la'
+alias tree='eza --tree'
+
 # pnpm aliases
 alias p="pnpm"
 alias pw="pnpm run --workspace-root"
