@@ -11,6 +11,11 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 - GitHub CLI
 - Python 3, make, g++, build-essential
 
+### Modern CLI Tools
+
+- ripgrep (rg) - Fast grep alternative for code search
+- jq - JSON processor for API responses and config files
+
 ### Shell Configuration
 
 - zsh with Oh My Zsh
@@ -32,9 +37,6 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 ```json
 {
   "image": "ghcr.io/arthurfiorette/devwork:24",
-  "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  },
   "customizations": {
     "vscode": {
       "settings": {
@@ -64,27 +66,28 @@ docker run -it --rm ghcr.io/arthurfiorette/devwork:24 zsh
 
 ## Available Tags
 
-The image is published with multiple tags for different Node.js versions:
+The image is published with tags for different Node.js versions:
 
-- `24` - Node.js 24.x (recommended, tagged as latest)
-- `24-YYYYMMDD` - Node.js 24.x with date stamp
+- `24` - Node.js 24.x (recommended)
+- `24-abc1234` - Node.js 24.x at specific commit
 - `22` - Node.js 22.x
-- `22-YYYYMMDD` - Node.js 22.x with date stamp
-- `lts` - Node.js LTS version
-- `lts-YYYYMMDD` - Node.js LTS with date stamp
-- `latest` - Points to Node.js 24
+- `22-abc1234` - Node.js 22.x at specific commit
 
-Tags are rebuilt weekly to include security updates.
+- `20-abc1234` - Node.js 20.x at specific commit
+- `lts` - Node.js LTS version
+- `lts-abc1234` - Node.js LTS at specific commit
+
+Use version tags (e.g., `24`) for the latest build, or commit-specific tags (e.g., `24-abc1234`) to pin to a specific version. Images are rebuilt weekly with security updates.
 
 ## Features
 
 ### Shell Experience
 
 - zsh as default shell with persistent history
-- Starship prompt for fast, informative status
+- Starship prompt with Node.js, git, and Docker awareness
 - Oh My Zsh with curated plugins for Node.js development
 - Syntax highlighting and autosuggestions
-- Git integration in prompt
+- Git integration showing branch, status, and changes
 
 ### Development Optimized
 
@@ -92,12 +95,15 @@ Tags are rebuilt weekly to include security updates.
 - pnpm configured and ready (no interactive prompts)
 - Proper permissions for non-root user
 - Optimized for monorepos and workspaces
+- Fast code search with ripgrep
+- JSON processing with jq
 
 ### AI Development Ready
 
 - uv/uvx installed for running AI coding assistants
 - Compatible with Serena MCP, Cursor, and other AI tools
 - Supports GitHub Codespaces natively
+- Ready for Claude Code, Aider, and similar tools
 
 ## Configuration
 
@@ -160,8 +166,14 @@ docker build -t my-devcontainer:24 .
 # Build for Node.js 22
 docker build --build-arg NODE_VERSION=22 -t my-devcontainer:22 .
 
+# Build for Node.js 20
+docker build --build-arg NODE_VERSION=20 -t my-devcontainer:20 .
+
 # Build for LTS
 docker build --build-arg NODE_VERSION=lts -t my-devcontainer:lts .
+
+# Test the build
+docker run --rm my-devcontainer:24 sh -c "node -v && pnpm -v && rg --version && jq --version"
 ```
 
 ## Requirements

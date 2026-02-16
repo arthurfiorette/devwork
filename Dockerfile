@@ -7,20 +7,22 @@ FROM node:${NODE_VERSION}-bookworm-slim
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-    bash \
-    zsh \
-    git \
-    openssh-client \
-    openssl \
-    ca-certificates \
-    curl \
-    wget \
-    gnupg \
-    libssl-dev \
-    python3 \
-    make \
-    g++ \
-    build-essential \
+        bash \
+        zsh \
+        git \
+        openssh-client \
+        openssl \
+        ca-certificates \
+        curl \
+        wget \
+        gnupg \
+        libssl-dev \
+        python3 \
+        make \
+        g++ \
+        build-essential \
+        ripgrep \
+        jq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -49,7 +51,7 @@ RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${Z
     git clone --depth=1 https://github.com/marlonrichert/zsh-autocomplete.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete && \
     git clone --depth=1 https://github.com/TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/autoupdate
 
-# Copy zsh configuration (includes PATH setup for cargo bin)
+# Copy zsh configuration
 COPY --chown=node:node .zshrc /home/node/.zshrc
 
 # Create necessary directories with proper ownership
