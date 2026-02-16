@@ -25,6 +25,7 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ### Developer Tools
 
+- Claude Code CLI for AI-assisted development
 - uv/uvx (Python package runner for AI tools like Serena MCP)
 - OpenSSL development libraries (for Prisma and other native modules)
 - Git with optimized configuration

@@ -29,6 +29,9 @@ RUN apt-get update && \
 # Install Starship prompt
 RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes
 
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
 # Install uv/uvx (Python package runner for AI tools)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 

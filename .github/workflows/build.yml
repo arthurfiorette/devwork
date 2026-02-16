@@ -78,6 +78,7 @@ jobs:
             pnpm --version &&
             zsh --version &&
             starship --version &&
+            claude --version &&
             uvx --version &&
             rg --version &&
             jq --version
