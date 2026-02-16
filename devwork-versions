@@ -1,0 +1,12 @@
+#!/bin/sh
+# devwork-versions - Display versions of all installed development tools
+# Can be used as healthcheck or verification script
+
+set -e
+
+echo "Node.js:    $(node --version)"
+echo "pnpm:       $(pnpm --version 2>&1 | head -1)"
+echo "zsh:        $(zsh --version 2>&1 | head -1 | awk '{print $2}')"
+echo "Starship:   $(starship --version 2>&1 | head -1 | awk '{print $2}')"
+echo "Claude:     $(claude --version 2>&1 | head -1 || echo 'not found')"
+echo "uvx:        $(uvx --version 2>&1 | head -1)"

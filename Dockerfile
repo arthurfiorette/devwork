@@ -26,18 +26,15 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Starship prompt
+# Install Starship prompt (system-wide)
 RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes
 
-# Install Claude Code CLI
-RUN curl -fsSL https://claude.ai/install.sh | bash
-
-# Install uv/uvx (Python package runner for AI tools)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Copy Git defaults to system-level config (before USER node)
-# This allows user-level config to override while keeping good defaults
+# Copy Git defaults to system-level config
 COPY .gitconfig /etc/gitconfig
+
+# Copy version check script
+COPY devwork-versions /usr/local/bin/devwork-versions
+RUN chmod +x /usr/local/bin/devwork-versions
 
 # Enable pnpm (latest - projects specify version via packageManager field)
 ENV PNPM_HOME="/pnpm"
@@ -49,8 +46,14 @@ RUN corepack enable && \
 USER node
 WORKDIR /home/node
 
-# Add cargo bin to PATH globally (for uv/uvx)
-ENV PATH="/home/node/.cargo/bin:$PATH"
+# Add user bin directories to PATH
+ENV PATH="/home/node/.cargo/bin:/home/node/.claude/bin:$PATH"
+
+# Install uv/uvx (Python package runner for AI tools)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install Claude Code CLI
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended

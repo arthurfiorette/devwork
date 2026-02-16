@@ -8,6 +8,8 @@ on:
       - 'Dockerfile'
       - '.zshrc'
       - '.profile'
+      - '.gitconfig'
+      - 'devwork-versions'
       - '.github/workflows/build.yml'
   workflow_dispatch:
   schedule:
@@ -53,8 +55,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ matrix.node_version }}
-            type=sha,prefix=${{ matrix.node_version }}-,format=short
+            type=raw,value=${{ matrix.node_version }}-node
+            type=sha,prefix=${{ matrix.node_version }}-node-,format=short
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -73,13 +75,4 @@ jobs:
 
       - name: Test image
         run: |
-          docker run --rm --platform linux/amd64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.node_version }} sh -c "
-            node --version &&
-            pnpm --version &&
-            zsh --version &&
-            starship --version &&
-            claude --version &&
-            uvx --version &&
-            rg --version &&
-            jq --version
-          "
+          docker run --rm --platform linux/amd64 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.node_version }}-node devwork-versions

@@ -37,7 +37,7 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ```json
 {
-  "image": "ghcr.io/arthurfiorette/devwork:24",
+  "image": "ghcr.io/arthurfiorette/devwork:24-node",
   "customizations": {
     "vscode": {
       "settings": {
@@ -53,7 +53,7 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 ```yaml
 services:
   devcontainer:
-    image: ghcr.io/arthurfiorette/devwork:24
+    image: ghcr.io/arthurfiorette/devwork:24-node
     volumes:
       - .:/workspace
     command: sleep infinity
@@ -62,23 +62,22 @@ services:
 ### Direct Docker Run
 
 ```bash
-docker run -it --rm ghcr.io/arthurfiorette/devwork:24 zsh
+docker run -it --rm ghcr.io/arthurfiorette/devwork:24-node zsh
 ```
 
 ## Available Tags
 
 The image is published with tags for different Node.js versions:
 
-- `24` - Node.js 24.x (recommended)
-- `24-abc1234` - Node.js 24.x at specific commit
-- `22` - Node.js 22.x
-- `22-abc1234` - Node.js 22.x at specific commit
+- `24-node` - Node.js 24.x (recommended)
+- `24-node-abc1234` - Node.js 24.x at specific commit
+- `22-node` - Node.js 22.x
+- `22-node-abc1234` - Node.js 22.x at specific commit
 
-- `20-abc1234` - Node.js 20.x at specific commit
-- `lts` - Node.js LTS version
-- `lts-abc1234` - Node.js LTS at specific commit
+- `lts-node` - Node.js LTS version
+- `lts-node-abc1234` - Node.js LTS at specific commit
 
-Use version tags (e.g., `24`) for the latest build, or commit-specific tags (e.g., `24-abc1234`) to pin to a specific version. Images are rebuilt weekly with security updates.
+Use version tags (e.g., `24-node`) for the latest build, or commit-specific tags (e.g., `24-node-abc1234`) to pin to a specific version. Images are rebuilt weekly with security updates.
 
 ## Features
 
@@ -172,19 +171,19 @@ The image uses pnpm@latest, but Corepack automatically respects the `packageMana
 
 ```bash
 # Build for Node.js 24
-docker build -t my-devcontainer:24 .
+docker build -t my-devcontainer:24-node .
 
 # Build for Node.js 22
-docker build --build-arg NODE_VERSION=22 -t my-devcontainer:22 .
+docker build --build-arg NODE_VERSION=22 -t my-devcontainer:22-node .
 
 # Build for Node.js 20
 docker build --build-arg NODE_VERSION=20 -t my-devcontainer:20 .
 
 # Build for LTS
-docker build --build-arg NODE_VERSION=lts -t my-devcontainer:lts .
+docker build --build-arg NODE_VERSION=lts -t my-devcontainer:lts-node .
 
 # Test the build
-docker run --rm my-devcontainer:24 sh -c "node -v && pnpm -v && rg --version && jq --version"
+docker run --rm my-devcontainer:24-node devwork-versions
 ```
 
 ## Requirements
@@ -200,3 +199,24 @@ This is a personal project but issues and suggestions are welcome. The image is 
 ## License
 
 MIT License - See LICENSE file for details.
+
+## Verification
+
+The image includes a `devwork-versions` command to verify all tools are installed:
+
+```bash
+# Run inside container
+devwork-versions
+
+# Or from outside
+docker run --rm ghcr.io/arthurfiorette/devwork:24-node devwork-versions
+```
+
+This script can also be used as a healthcheck in docker-compose:
+
+```yaml
+healthcheck:
+  test: ["CMD", "devwork-versions"]
+  interval: 30s
+  timeout: 3s
+```
