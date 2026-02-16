@@ -17,6 +17,7 @@ RUN apt-get update && \
         wget \
         gnupg \
         sudo \
+        starship \
         locales \
         nano \
         libssl-dev \
