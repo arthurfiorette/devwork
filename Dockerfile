@@ -1,7 +1,7 @@
 # Node.js Development Container
 # Multi-version support via build arg
 ARG NODE_VERSION=24
-FROM node:${NODE_VERSION}-bookworm-slim
+FROM node:${NODE_VERSION}-trixie-slim
 
 # Install system dependencies
 RUN apt-get update && \
@@ -14,7 +14,9 @@ RUN apt-get update && \
         openssl \
         ca-certificates \
         curl \
+        nano \
         wget \
+        starship \
         gnupg \
         libssl-dev \
         python3 \
@@ -25,9 +27,6 @@ RUN apt-get update && \
         jq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Install Starship prompt (system-wide)
-RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes
 
 # Copy Git defaults to system-level config
 COPY .gitconfig /etc/gitconfig
