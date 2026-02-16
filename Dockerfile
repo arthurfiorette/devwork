@@ -14,10 +14,11 @@ RUN apt-get update && \
         openssl \
         ca-certificates \
         curl \
-        nano \
         wget \
-        starship \
         gnupg \
+        sudo \
+        locales \
+        nano \
         libssl-dev \
         python3 \
         make \
@@ -27,6 +28,27 @@ RUN apt-get update && \
         jq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Generate locale
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
+    locale-gen
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+# Setup sudo for node user
+RUN echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node && \
+    chmod 0440 /etc/sudoers.d/node
+
+# Setup NPM global directory with proper permissions
+RUN umask 0002 && \
+    groupadd -r npm && \
+    usermod -a -G npm node && \
+    mkdir -p /usr/local/share/npm-global && \
+    chown :npm /usr/local/share/npm-global && \
+    chmod g+s /usr/local/share/npm-global && \
+    npm config set prefix /usr/local/share/npm-global
+ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
+ENV PATH=/usr/local/share/npm-global/bin:$PATH
 
 # Copy Git defaults to system-level config
 COPY .gitconfig /etc/gitconfig
@@ -38,7 +60,6 @@ RUN chmod +x /usr/local/bin/devwork-versions
 # Enable pnpm (latest - projects specify version via packageManager field)
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && \
     corepack prepare pnpm@latest --activate
 
@@ -48,6 +69,9 @@ WORKDIR /home/node
 
 # Add user bin directories to PATH
 ENV PATH="/home/node/.cargo/bin:/home/node/.claude/bin:$PATH"
+
+# Configure NPM global for node user
+RUN npm config set prefix /usr/local/share/npm-global
 
 # Install uv/uvx (Python package runner for AI tools)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -74,6 +98,9 @@ RUN echo "" >> ~/.bashrc && \
     echo "if [ -f ~/.profile ]; then" >> ~/.bashrc && \
     echo "    . ~/.profile" >> ~/.bashrc && \
     echo "fi" >> ~/.bashrc
+
+# Git safe directory for mounted volumes
+RUN git config --global --add safe.directory '*'
 
 # Create necessary directories with proper ownership
 RUN mkdir -p ~/shell-history \
