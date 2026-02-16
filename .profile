@@ -6,7 +6,8 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.claude/bin:$PATH"
 
 # Modern CLI replacements
-alias cat='bat --paging=never --style=plain'
+alias cat='batcat --paging=never --style=plain'
+alias bat='batcat' # debian-based distros use 'batcat' to avoid conflict with the 'bat' package
 alias ls='eza'
 alias ll='eza -l'
 alias la='eza -la'
