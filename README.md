@@ -33,6 +33,16 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ## Usage
 
+### Complete Example
+
+See `example.devcontainer.json` for a full configuration example including:
+
+- Docker-in-Docker support (with moby: false for Trixie compatibility)
+- Persistent volumes for shell history and pnpm store
+- Git, SSH, and GPG key mounting
+- Common VSCode extensions
+- Port forwarding example
+
 ### In devcontainer.json
 
 ```json
@@ -142,6 +152,7 @@ To use your own Git config (recommended for personal settings like name/email):
 Your personal config will be merged with the built-in defaults (your settings take precedence).
 
 If not mounted, the container uses the included defaults:
+
 - Pull with rebase
 - Auto-setup remote on push
 - GPG signing enabled (requires GPG keys mounted separately)
@@ -216,7 +227,7 @@ This script can also be used as a healthcheck in docker-compose:
 
 ```yaml
 healthcheck:
-  test: ["CMD", "devwork-versions"]
+  test: ['CMD', 'devwork-versions']
   interval: 30s
   timeout: 3s
 ```

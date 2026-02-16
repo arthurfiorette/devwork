@@ -1,0 +1,67 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+  "name": "Node.js Project",
+  "image": "ghcr.io/arthurfiorette/devwork:24-node",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  // Container name
+  "runArgs": ["--name=example-devcontainer"],
+
+  // Features
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": false,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  // VSCode settings
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "eamodio.gitlens",
+        "pflannery.vscode-versionlens",
+        "shardulm94.trailing-spaces",
+        "TypeScriptTeam.native-preview",
+        "unional.vscode-sort-package-json"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  // Example port forwarding
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "App",
+      "protocol": "http"
+    }
+  },
+
+  // Lifecycle scripts
+  "postCreateCommand": "pnpm install",
+
+  // Container user
+  "remoteUser": "node",
+  "containerUser": "node",
+
+  // Mount options
+  "mounts": [
+    // Persist shell history
+    "source=shell-history,target=/home/node/shell-history,type=volume",
+    // Persist pnpm store
+    "source=pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume",
+    // Git config from host (read-only)
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
+    // SSH keys for git (read-only)
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached,readonly",
+    // GPG keys for signing (read-only, optional)
+    "source=${localEnv:HOME}/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached,readonly"
+  ]
+}

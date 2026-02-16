@@ -62,6 +62,7 @@ RUN chmod +x /usr/local/bin/devwork-versions
 # Enable pnpm (latest - projects specify version via packageManager field)
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && \
     corepack prepare pnpm@latest --activate
 
