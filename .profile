@@ -1,9 +1,7 @@
 # ~/.profile - Shared configuration for all shells
 
-# PATH setup
+# PATH setup for user-specific directories
 export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.claude/bin:$PATH"
 
 # Modern CLI replacements
 alias cat='batcat --paging=never --style=plain'
