@@ -59,6 +59,7 @@ RUN corepack enable && \
 # Switch to node user for user-specific installations
 USER node
 WORKDIR /home/node
+ENV HOME=/home/node
 
 # Setup all PATH directories and NPM config in one place
 ENV NPM_CONFIG_PREFIX="$HOME/.npm-global"
