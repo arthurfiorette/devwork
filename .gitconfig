@@ -6,7 +6,8 @@
 [init]
     defaultBranch = main
 [commit]
-    gpgsign = true
+    # Only set this to true if you have a GPG key configured and want to sign all your commits by default.
+    gpgsign = false
 [push]
     autoSetupRemote = true
 [rerere]

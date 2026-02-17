@@ -1,7 +1,7 @@
 # ~/.zshrc - Zsh-specific configuration
 
 # History configuration
-export HISTFILE="~/shell-history/.zsh_history"
+export HISTFILE="$HOME/shell-history/.zsh_history"
 export HISTSIZE=10000
 export SAVEHIST=10000
 export ZSH="$HOME/.oh-my-zsh"

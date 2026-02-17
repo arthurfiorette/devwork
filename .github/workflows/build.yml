@@ -36,6 +36,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Lint shell scripts
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck devwork-versions .profile || true
+          echo "Shell script linting completed"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -86,3 +92,19 @@ jobs:
           fi
 
           docker run --rm --platform linux/amd64 $IMAGE_TAG devwork-versions
+
+      - name: Image size report
+        run: |
+          echo "### Image Size Report (Node ${{ matrix.node_version }})" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep "${{ matrix.node_version }}-node" || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            IMAGE_TAG="${{ env.IMAGE_NAME }}:${{ matrix.node_version }}-node"
+          else
+            IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.node_version }}-node"
+          fi
+
+          SIZE=$(docker images --format "{{.Size}}" "$IMAGE_TAG" | head -1)
+          echo "Image size: $SIZE"

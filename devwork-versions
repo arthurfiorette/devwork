@@ -2,15 +2,29 @@
 # devwork-versions - Display versions of all installed development tools
 # Can be used as healthcheck or verification script
 
-set -e
+# Helper function to safely get version or return NOT FOUND
+get_version() {
+    tool_name="$1"
+    version_cmd="$2"
 
-echo "bat:        $(bat --version 2>&1 | head -1 | awk '{print $2}')"
-echo "Claude:     $(claude --version 2>&1 | head -1 || echo 'not found')"
-echo "eza:        $(eza --version 2>&1 | head -1 | awk '{print $2}')"
-echo "jq:         $(jq --version 2>&1 | head -1 | sed 's/jq-//')"
-echo "Node.js:    $(node --version)"
-echo "pnpm:       $(pnpm --version 2>&1 | head -1)"
-echo "ripgrep:    $(rg --version 2>&1 | head -1 | awk '{print $2}')"
-echo "Starship:   $(starship --version 2>&1 | head -1 | awk '{print $2}')"
-echo "uvx:        $(uvx --version 2>&1 | head -1)"
-echo "zsh:        $(zsh --version 2>&1 | head -1 | awk '{print $2}')"
+    if command -v "$(echo "$version_cmd" | awk '{print $1}')" >/dev/null 2>&1; then
+        version=$(eval "$version_cmd" 2>&1 | head -1 || echo "ERROR")
+    else
+        version="NOT FOUND"
+    fi
+
+    printf "%-12s %s\n" "$tool_name:" "$version"
+}
+
+# Display versions
+get_version "bat" "bat --version | awk '{print \$2}'"
+get_version "Claude" "claude --version"
+get_version "eza" "eza --version | awk '{print \$2}'"
+get_version "jq" "jq --version | sed 's/jq-//'"
+get_version "Node.js" "node --version"
+get_version "npm" "npm --version"
+get_version "pnpm" "pnpm --version"
+get_version "ripgrep" "rg --version | awk '{print \$2}'"
+get_version "Starship" "starship --version | awk '{print \$2}'"
+get_version "uvx" "uvx --version"
+get_version "zsh" "zsh --version | awk '{print \$2}'"

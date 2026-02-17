@@ -29,8 +29,9 @@ RUN apt-get update && \
         jq \
         bat \
         eza \
+    && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Generate locale
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
@@ -38,20 +39,9 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-# Setup sudo for node user
-RUN echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node && \
+# Setup sudo for node user (limited to package management only)
+RUN echo "node ALL=(root) NOPASSWD: /usr/bin/apt-get, /usr/bin/apt, /usr/bin/dpkg" > /etc/sudoers.d/node && \
     chmod 0440 /etc/sudoers.d/node
-
-# Setup NPM global directory with proper permissions
-RUN umask 0002 && \
-    groupadd -r npm && \
-    usermod -a -G npm node && \
-    mkdir -p /usr/local/share/npm-global && \
-    chown :npm /usr/local/share/npm-global && \
-    chmod g+s /usr/local/share/npm-global && \
-    npm config set prefix /usr/local/share/npm-global
-ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
-ENV PATH=/usr/local/share/npm-global/bin:$PATH
 
 # Copy Git defaults to system-level config
 COPY .gitconfig /etc/gitconfig
@@ -62,7 +52,6 @@ RUN chmod +x /usr/local/bin/devwork-versions
 
 # Enable pnpm (latest - projects specify version via packageManager field)
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && \
     corepack prepare pnpm@latest --activate
@@ -71,11 +60,13 @@ RUN corepack enable && \
 USER node
 WORKDIR /home/node
 
-# Add user bin directories to PATH
-ENV PATH="/home/node/.cargo/bin:/home/node/.claude/bin:$PATH"
+# Setup all PATH directories and NPM config in one place
+ENV NPM_CONFIG_PREFIX="$HOME/.npm-global"
+ENV PATH="$HOME/.cargo/bin:$HOME/.claude/bin:$HOME/.npm-global/bin:$PNPM_HOME:$PATH"
 
 # Configure NPM global for node user
-RUN npm config set prefix /usr/local/share/npm-global
+RUN npm config set prefix "$HOME/.npm-global" && \
+    mkdir -p "$HOME/.npm-global"
 
 # Install uv/uvx (Python package runner for AI tools)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -87,31 +78,36 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Install Oh My Zsh custom plugins
-RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions && \
-    git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting && \
-    git clone --depth=1 https://github.com/marlonrichert/zsh-autocomplete.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autocomplete && \
-    git clone --depth=1 https://github.com/TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/autoupdate
+ENV ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM}/plugins/zsh-autosuggestions && \
+    git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM}/plugins/fast-syntax-highlighting && \
+    git clone --depth=1 https://github.com/marlonrichert/zsh-autocomplete.git ${ZSH_CUSTOM}/plugins/zsh-autocomplete && \
+    git clone --depth=1 https://github.com/TamCore/autoupdate-oh-my-zsh-plugins.git ${ZSH_CUSTOM}/plugins/autoupdate
 
 # Copy shell configurations
-COPY --chown=node:node .profile /home/node/.profile
-COPY --chown=node:node .zshrc /home/node/.zshrc
+COPY --chown=node:node .profile $HOME/.profile
+COPY --chown=node:node .zshrc $HOME/.zshrc
+
+# Copy Starship configuration
+RUN mkdir -p $HOME/.config
+COPY --chown=node:node starship.toml $HOME/.config/starship.toml
 
 # Append .profile loading to .bashrc (don't overwrite existing)
-RUN echo "" >> ~/.bashrc && \
-    echo "# Load shared profile" >> ~/.bashrc && \
-    echo "if [ -f ~/.profile ]; then" >> ~/.bashrc && \
-    echo "    . ~/.profile" >> ~/.bashrc && \
-    echo "fi" >> ~/.bashrc
+RUN echo "" >> $HOME/.bashrc && \
+    echo "# Load shared profile" >> $HOME/.bashrc && \
+    echo "if [ -f ~/.profile ]; then" >> $HOME/.bashrc && \
+    echo "    . ~/.profile" >> $HOME/.bashrc && \
+    echo "fi" >> $HOME/.bashrc
 
 # Git safe directory for mounted volumes
-RUN git config --global --add safe.directory '*'
+RUN git config --global --add safe.directory /workspace
 
 # Create necessary directories with proper ownership
-RUN mkdir -p ~/shell-history \
-    ~/.local/share/zsh \
-    ~/.local/state/zsh-autocomplete/log \
-    ~/.local/share/pnpm/store \
-    && chown -R node:node ~/.local
+RUN mkdir -p $HOME/shell-history \
+    $HOME/.local/share/zsh \
+    $HOME/.local/state/zsh-autocomplete/log \
+    $HOME/.local/share/pnpm/store \
+    && chown -R node:node $HOME/.local
 
 # Set working directory
 WORKDIR /workspace

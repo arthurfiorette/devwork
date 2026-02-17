@@ -6,7 +6,7 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ### Base Environment
 
-- Node.js (Debian Bookworm Slim base)
+- Node.js (Debian Trixie Slim base)
 - pnpm package manager (latest via Corepack)
 - GitHub CLI
 - Python 3, make, g++, build-essential
@@ -47,7 +47,7 @@ See `example.devcontainer.json` for a full configuration example including:
 
 ```json
 {
-  "image": "ghcr.io/arthurfiorette/devwork:24-node",
+  "image": "ghcr.io/arthurfiorette/devwork:lts-node",
   "customizations": {
     "vscode": {
       "settings": {
@@ -63,7 +63,7 @@ See `example.devcontainer.json` for a full configuration example including:
 ```yaml
 services:
   devcontainer:
-    image: ghcr.io/arthurfiorette/devwork:24-node
+    image: ghcr.io/arthurfiorette/devwork:lts-node
     volumes:
       - .:/workspace
     command: sleep infinity
@@ -72,22 +72,22 @@ services:
 ### Direct Docker Run
 
 ```bash
-docker run -it --rm ghcr.io/arthurfiorette/devwork:24-node zsh
+docker run -it --rm ghcr.io/arthurfiorette/devwork:lts-node zsh
 ```
 
 ## Available Tags
 
 The image is published with tags for different Node.js versions:
 
+- `lts-node` - Node.js LTS version
+- `lts-node-abc1234` - Node.js LTS at specific commit
+
 - `24-node` - Node.js 24.x (recommended)
 - `24-node-abc1234` - Node.js 24.x at specific commit
 - `22-node` - Node.js 22.x
 - `22-node-abc1234` - Node.js 22.x at specific commit
 
-- `lts-node` - Node.js LTS version
-- `lts-node-abc1234` - Node.js LTS at specific commit
-
-Use version tags (e.g., `24-node`) for the latest build, or commit-specific tags (e.g., `24-node-abc1234`) to pin to a specific version. Images are rebuilt weekly with security updates.
+Use version tags (e.g., `lts-node`) for the latest build, or commit-specific tags (e.g., `lts-node-abc1234`) to pin to a specific version. Images are rebuilt weekly with security updates.
 
 ## Features
 

@@ -1,0 +1,5 @@
+# Starship configuration for devwork containers
+# Minimal config - only disable Docker to avoid clutter
+
+[docker_context]
+disabled = true
