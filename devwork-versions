@@ -17,12 +17,12 @@ get_version() {
 }
 
 # Display versions
-get_version "bat" "bat --version | awk '{print \$2}'"
+get_version "bat" "batcat --version | awk '{print \$2}'"
 get_version "claude" "claude --version"
 get_version "eza" "eza --version | awk '{print \$2}'"
 get_version "jq" "jq --version | sed 's/jq-//'"
 get_version "node" "node --version"
-get_version "npm" "npm --version"
+get_version "npm" "npm --silent --version"
 get_version "pnpm" "pnpm --version"
 get_version "ripgrep" "rg --version | awk '{print \$2}'"
 get_version "starship" "starship --version | awk '{print \$2}'"
