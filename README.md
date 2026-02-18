@@ -158,6 +158,16 @@ If not mounted, the container uses the included defaults:
 - GPG signing enabled (requires GPG keys mounted separately)
 - Optimized log, diff, and rebase settings
 
+### User Password
+
+The `node` user has a default password of `node`. To change it:
+
+```bash
+sudo passwd node
+```
+
+Note: the password resets to `node` on every container rebuild.
+
 ## Built-in Shell Helpers
 
 ### pnpm Aliases

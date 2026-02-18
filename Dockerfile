@@ -16,6 +16,7 @@ RUN apt-get update && \
         curl \
         wget \
         gnupg \
+        procps \
         sudo \
         starship \
         locales \
@@ -38,10 +39,14 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
+ENV COLORTERM=truecolor
 
 # Setup sudo for node user (limited to package management only)
 RUN echo "node ALL=(root) NOPASSWD: /usr/bin/apt-get, /usr/bin/apt, /usr/bin/dpkg" > /etc/sudoers.d/node && \
     chmod 0440 /etc/sudoers.d/node
+
+# Set default password for node user (change with: sudo passwd node)
+RUN echo "node:node" | chpasswd
 
 # Copy Git defaults to system-level config
 COPY .gitconfig /etc/gitconfig

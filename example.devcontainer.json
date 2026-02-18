@@ -10,13 +10,20 @@
 
   // Features
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "moby": false,
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {
       "version": "latest"
     }
+  },
+
+  "containerEnv": {
+    // Used by docker-compose bind mounts so paths resolve on the host Docker daemon
+    // When running docker-compose from the container use: `- ${HOST_PROJECT_PATH:-.}/my-path:/container-path`
+    // so it works in both environments (devcontainers and host)
+    "HOST_PROJECT_PATH": "${localWorkspaceFolder}"
   },
 
   // VSCode settings
@@ -61,7 +68,7 @@
     "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
     // SSH keys for git (read-only)
     "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached,readonly",
-    // GPG keys for signing (read-only, optional)
-    "source=${localEnv:HOME}/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached,readonly"
+    // GPG keys for signing (optional)
+    "source=${localEnv:HOME}/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached"
   ]
 }
