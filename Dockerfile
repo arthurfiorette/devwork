@@ -41,8 +41,8 @@ ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV COLORTERM=truecolor
 
-# Setup sudo for node user (limited to package management only)
-RUN echo "node ALL=(root) NOPASSWD: /usr/bin/apt-get, /usr/bin/apt, /usr/bin/dpkg" > /etc/sudoers.d/node && \
+# Setup passwordless sudo for node user (devcontainer standard practice)
+RUN echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node && \
     chmod 0440 /etc/sudoers.d/node
 
 # Set default password for node user (change with: sudo passwd node)
