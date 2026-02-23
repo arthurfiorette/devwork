@@ -98,7 +98,7 @@
   // start). Use it for one-time setup: installing dependencies, configuring
   // git hooks, seeding databases, etc.
   // Chain commands with && so the step fails fast if anything goes wrong.
-  "postCreateCommand": "git config core.hooksPath .githooks",
+  "postCreateCommand": "cp -rn /tmp/host-config/. ~/.config/ && git config core.hooksPath .githooks",
 
   // postStartCommand runs on every container start (including resume).
   // Keep it fast. Good for starting background services or printing a welcome
@@ -137,12 +137,10 @@
     // enable it in your personal ~/.gitconfig if you want signed commits).
     "source=${localEnv:HOME}/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached,readonly",
 
-    // XDG config directory - shares config for all tools (opencode, gh, etc.)
-    // so you don't need to re-authenticate or reconfigure on every rebuild.
-    // Tradeoff: the container can read all your tool configs including tokens.
-    // Acceptable for a trusted personal dev container; use per-tool mounts if
-    // you prefer tighter isolation (e.g. ~/.config/opencode, ~/.config/gh).
-    "source=${localEnv:HOME}/.config,target=/home/node/.config,type=bind,consistency=cached"
+    // XDG config directory mounted to a staging path. postCreateCommand copies
+    // it to ~/.config so the container gets a snapshot at creation time rather
+    // than a live link - changes inside the container don't affect the host.
+    "source=${localEnv:HOME}/.config,target=/tmp/host-config,type=bind,consistency=cached,readonly"
 
     // Named volume for the pnpm content-addressable store. Sharing a store
     // across rebuilds avoids re-downloading packages. Uncomment if your
