@@ -33,28 +33,31 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ## Usage
 
-### Complete Example
+### Reference Example
 
-See `example.devcontainer.json` for a full configuration example including:
+`.devcontainer/devcontainer.json` in this repo is a fully commented reference configuration. Read through it to understand what's available and why each setting exists, then copy and adapt it for your project.
 
-- Docker-in-Docker support (with moby: false for Trixie compatibility)
+It covers:
+
+- Image selection and version pinning strategy
+- Docker-outside-of-Docker setup (`moby: false` + `enableNonRootDocker`)
+- Host network mode and when to use it
+- `HOST_PROJECT_PATH` for docker-compose bind mounts inside the container
+- Custom CA certificates for corporate or self-signed TLS
 - Persistent volumes for shell history and pnpm store
-- Git, SSH, and GPG key mounting
-- Common VSCode extensions
-- Port forwarding example
+- Git, SSH, GPG, and OpenCode config mounting
+- VS Code extensions and settings
+- Lifecycle scripts (`postCreateCommand`, `postStartCommand`)
 
-### In devcontainer.json
+### Minimal Setup
 
 ```json
 {
   "image": "ghcr.io/arthurfiorette/devwork:lts-node",
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "zsh"
-      }
-    }
-  }
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "remoteUser": "node",
+  "containerUser": "node"
 }
 ```
 

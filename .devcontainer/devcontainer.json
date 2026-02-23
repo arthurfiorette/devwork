@@ -1,0 +1,152 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+
+  // Human-readable name shown in VS Code and Codespaces UI
+  "name": "devwork",
+
+  // ─── Image ────────────────────────────────────────────────────────────────
+  // Use a specific Node version for reproducible builds, or lts-node to always
+  // get the latest LTS. Pinning to a version (e.g. 24-node) is recommended for
+  // team projects so everyone runs the same environment.
+  // Available tags: lts-node, 24-node, 22-node (+ commit-pinned variants)
+  "image": "ghcr.io/arthurfiorette/devwork:lts-node",
+
+  // Always mount the workspace to /workspace. consistency=cached gives better
+  // I/O performance on macOS by allowing the container view to lag slightly
+  // behind the host (fine for source code, never for databases).
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  // ─── Container runtime ────────────────────────────────────────────────────
+  "runArgs": [
+    // Give the container a stable name so you can reference it with docker CLI.
+    // Change this to something unique per project to avoid conflicts.
+    "--name=devwork-dev",
+
+    // Share the host network stack (no NAT, ports are available
+    // on localhost automatically). Useful when services on the host need to
+    // reach the container or vice-versa. Disable VS Code's auto port forwarding
+    // UI if you use this (see remote.autoForwardPorts below).
+    "--network=host"
+  ],
+
+  // ─── Environment variables ────────────────────────────────────────────────
+  "containerEnv": {
+    // Expose the host workspace path to the container so docker-compose volume
+    // mounts resolve correctly when run from inside the container. Relative
+    // paths in docker-compose.yml become absolute on the *host* daemon, which
+    // doesn't know about /workspace. Use it in compose files like:
+    //   source: ${HOST_PROJECT_PATH:-.}/infra/data
+    "HOST_PROJECT_PATH": "${localWorkspaceFolder}"
+
+    // Override TZ if your project depends on a specific timezone.
+    // "TZ": "America/Sao_Paulo"
+  },
+
+  // ─── Features ─────────────────────────────────────────────────────────────
+  "features": {
+    // Docker-outside-of-Docker: mounts the host Docker socket so you can run
+    // docker/docker-compose from inside the container without a nested daemon.
+    // - moby: false  → use upstream Docker CE instead of Moby (required on
+    //                  Debian Trixie where Moby packages are not available)
+    // - enableNonRootDocker: true → adds the node user to the docker group so
+    //                              sudo is not needed for every docker command
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "version": "latest",
+      "enableNonRootDocker": true
+    },
+
+    // GitHub CLI - already available in the image but the feature keeps it
+    // up-to-date independently of image rebuilds.
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  // ─── VS Code ──────────────────────────────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      // Extensions are installed inside the container and cached, so they
+      // don't slow down the host VS Code installation. Add project-specific
+      // extensions here rather than in your user profile so the whole team
+      // gets the same tooling automatically.
+      "extensions": [
+        "mkhl.shfmt",                    // Shell script formatter (uses shfmt)
+        "timonwong.shellcheck",          // Shell script linter
+        "ms-azuretools.vscode-docker",   // Dockerfile and compose support
+        "eamodio.gitlens"                // Git blame, history, and PR integration
+      ],
+      "settings": {
+        // Use zsh (configured with Oh My Zsh + Starship in the base image)
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        // Auto-format shell scripts on save using the shfmt extension
+        "editor.formatOnSave": true,
+        "[shellscript]": {
+          "editor.defaultFormatter": "mkhl.shfmt"
+        },
+
+        // Disable auto port forwarding when using --network=host to avoid
+        // confusing duplicate entries in the VS Code ports panel.
+        "remote.autoForwardPorts": false
+      }
+    }
+  },
+
+  // ─── Lifecycle scripts ────────────────────────────────────────────────────
+  // postCreateCommand runs once after the container is created (not on every
+  // start). Use it for one-time setup: installing dependencies, configuring
+  // git hooks, seeding databases, etc.
+  // Chain commands with && so the step fails fast if anything goes wrong.
+  "postCreateCommand": "git config core.hooksPath .githooks",
+
+  // postStartCommand runs on every container start (including resume).
+  // Keep it fast. Good for starting background services or printing a welcome
+  // message. Example: "postStartCommand": "devwork-versions"
+
+  // initializeCommand runs on the *host* before the container starts.
+  // Used here to ensure bind-mount source paths exist so Docker doesn't fail.
+  // Add any other host-side directories your mounts depend on.
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.config ${localEnv:HOME}/.gnupg ${localEnv:HOME}/.ssh",
+
+  // ─── User ─────────────────────────────────────────────────────────────────
+  // Always run as the node user (UID 1000). This matches the owner of files
+  // created by the official Node.js image and avoids permission issues with
+  // bind-mounted volumes. Never use root here.
+  "remoteUser": "node",
+  "containerUser": "node",
+
+  // ─── Mounts ───────────────────────────────────────────────────────────────
+  "mounts": [
+    // Named volume for shell history so your zsh history persists across
+    // container rebuilds. Each project should use its own named volume to
+    // avoid mixing history between projects.
+    "source=devwork-shell-history,target=/home/node/shell-history,type=volume",
+
+    // Bind-mount your host gitconfig so the container uses your name, email,
+    // and any personal settings. The base image provides safe defaults at
+    // /etc/gitconfig; your file takes precedence for any keys it defines.
+    // readonly prevents the container from accidentally modifying your config.
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
+
+    // SSH keys for git over SSH, private npm registries, remote servers, etc.
+    // readonly is important - the container should never write to your key files.
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,consistency=cached,readonly",
+
+    // GPG keys for signed commits (gitconfig has gpgsign=false by default -
+    // enable it in your personal ~/.gitconfig if you want signed commits).
+    "source=${localEnv:HOME}/.gnupg,target=/home/node/.gnupg,type=bind,consistency=cached,readonly",
+
+    // XDG config directory - shares config for all tools (opencode, gh, etc.)
+    // so you don't need to re-authenticate or reconfigure on every rebuild.
+    // Tradeoff: the container can read all your tool configs including tokens.
+    // Acceptable for a trusted personal dev container; use per-tool mounts if
+    // you prefer tighter isolation (e.g. ~/.config/opencode, ~/.config/gh).
+    "source=${localEnv:HOME}/.config,target=/home/node/.config,type=bind,consistency=cached"
+
+    // Named volume for the pnpm content-addressable store. Sharing a store
+    // across rebuilds avoids re-downloading packages. Uncomment if your
+    // project uses pnpm.
+    // "source=my-project-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume",
+  ]
+}
