@@ -68,7 +68,7 @@ ENV HOME=/home/node
 
 # Setup all PATH directories and NPM config in one place
 ENV NPM_CONFIG_PREFIX="$HOME/.npm-global"
-ENV PATH="$HOME/.cargo/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$PNPM_HOME:$PATH"
+ENV PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$PNPM_HOME:$PATH"
 
 # Configure NPM global for node user
 RUN npm config set prefix "$HOME/.npm-global" && \

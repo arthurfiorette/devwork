@@ -1,8 +1,5 @@
 # ~/.profile - Shared configuration for all shells
 
-# PATH setup for user-specific directories
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-
 # Modern CLI replacements
 alias cat='batcat --paging=never --style=plain'
 alias bat='batcat' # debian-based distros use 'batcat' to avoid conflict with the 'bat' package
