@@ -25,7 +25,7 @@ A production-ready Node.js development container image with zsh, Oh My Zsh, Star
 
 ### Developer Tools
 
-- Claude Code CLI for AI-assisted development
+- OpenCode CLI for AI-assisted development
 - uv/uvx (Python package runner for AI tools like Serena MCP)
 - OpenSSL development libraries (for Prisma and other native modules)
 - Git with optimized configuration
@@ -113,7 +113,7 @@ Use version tags (e.g., `lts-node`) for the latest build, or commit-specific tag
 - uv/uvx installed for running AI coding assistants
 - Compatible with Serena MCP, Cursor, and other AI tools
 - Supports GitHub Codespaces natively
-- Ready for Claude Code, Aider, and similar tools
+- Ready for OpenCode, Aider, and similar tools
 
 ## Configuration
 
@@ -169,6 +169,10 @@ sudo passwd node
 Note: the password resets to `node` on every container rebuild.
 
 ## Built-in Shell Helpers
+
+### OpenCode Aliases
+
+- `oc` - Shorthand for opencode
 
 ### pnpm Aliases
 

@@ -18,7 +18,7 @@ get_version() {
 
 # Display versions
 get_version "bat" "batcat --version | awk '{print \$2}'"
-get_version "claude" "claude --version"
+get_version "opencode" "opencode --version"
 get_version "eza" "eza --version | awk '{print \$2}'"
 get_version "jq" "jq --version | sed 's/jq-//'"
 get_version "node" "node --version"

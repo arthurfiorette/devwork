@@ -68,7 +68,7 @@ ENV HOME=/home/node
 
 # Setup all PATH directories and NPM config in one place
 ENV NPM_CONFIG_PREFIX="$HOME/.npm-global"
-ENV PATH="$HOME/.cargo/bin:$HOME/.claude/bin:$HOME/.npm-global/bin:$PNPM_HOME:$PATH"
+ENV PATH="$HOME/.cargo/bin:$HOME/.opencode/bin:$HOME/.npm-global/bin:$PNPM_HOME:$PATH"
 
 # Configure NPM global for node user
 RUN npm config set prefix "$HOME/.npm-global" && \
@@ -77,8 +77,8 @@ RUN npm config set prefix "$HOME/.npm-global" && \
 # Install uv/uvx (Python package runner for AI tools)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install Claude Code CLI
-RUN curl -fsSL https://claude.ai/install.sh | bash
+# Install OpenCode CLI
+RUN curl -fsSL https://opencode.ai/install | bash
 
 # Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
