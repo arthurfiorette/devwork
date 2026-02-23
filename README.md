@@ -234,6 +234,12 @@ docker run --rm devwork:24-node devwork-versions
 
 This is a personal project but issues and suggestions are welcome. The image is rebuilt weekly with the latest security updates and Oh My Zsh plugins.
 
+To set up the pre-commit hook that auto-formats shell scripts:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## License
 
 MIT License - See LICENSE file for details.

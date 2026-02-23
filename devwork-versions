@@ -4,16 +4,16 @@
 
 # Helper function to safely get version or return NOT FOUND
 get_version() {
-    tool_name="$1"
-    version_cmd="$2"
+  tool_name="$1"
+  version_cmd="$2"
 
-    if command -v "$(echo "$version_cmd" | awk '{print $1}')" >/dev/null 2>&1; then
-        version=$(eval "$version_cmd" 2>&1 | head -1 || echo "ERROR")
-    else
-        version="NOT FOUND"
-    fi
+  if command -v "$(echo "$version_cmd" | awk '{print $1}')" >/dev/null 2>&1; then
+    version=$(eval "$version_cmd" 2>&1 | head -1 || echo "ERROR")
+  else
+    version="NOT FOUND"
+  fi
 
-    printf "%-12s %s\n" "$tool_name:" "$version"
+  printf "%-12s %s\n" "$tool_name:" "$version"
 }
 
 # Display versions
