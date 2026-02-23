@@ -194,21 +194,34 @@ The image uses pnpm@latest, but Corepack automatically respects the `packageMana
 
 ## Building Locally
 
+Use the included `test.sh` script to build and test images locally, mirroring what CI does:
+
 ```bash
-# Build for Node.js 24
-docker build -t my-devcontainer:24-node .
+# Build and test all Node versions (22, 24, lts)
+./test.sh
 
-# Build for Node.js 22
-docker build --build-arg NODE_VERSION=22 -t my-devcontainer:22-node .
+# Build and test a specific version
+./test.sh 24
 
-# Build for Node.js 20
-docker build --build-arg NODE_VERSION=20 -t my-devcontainer:20 .
+# Build and test multiple versions
+./test.sh 22 24
+```
 
-# Build for LTS
-docker build --build-arg NODE_VERSION=lts -t my-devcontainer:lts-node .
+The script will:
+1. Lint shell scripts with shellcheck (if installed)
+2. Build the image for each version
+3. Run `devwork-versions` to verify all tools are installed
+4. Report image size
+5. Print a pass/fail summary
 
-# Test the build
-docker run --rm my-devcontainer:24-node devwork-versions
+To build manually without testing:
+
+```bash
+# Build for a specific Node version
+docker build --build-arg NODE_VERSION=24 -t devwork:24-node .
+
+# Run tools verification
+docker run --rm devwork:24-node devwork-versions
 ```
 
 ## Requirements
